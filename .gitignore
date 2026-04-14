@@ -1,0 +1,21 @@
+# Ambiente virtual 
+venv/
+
+# Arquivos compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Configurações locais sensíveis 
+.env
+
+# Banco de dados SQLite local (preventivomente, já que será utilizado o MySQL)
+db.sqlite3
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDE
+.vscode/
+.idea/
