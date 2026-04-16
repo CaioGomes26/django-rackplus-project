@@ -92,7 +92,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']  # pasta global de estáticos
 
 
 # Redirecionamentos do sistema de autenticação
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'gestao:home'
 LOGIN_URL = '/login/'
 
 
