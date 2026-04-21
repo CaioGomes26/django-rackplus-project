@@ -26,7 +26,13 @@ def sala_detalhe(request, pk):
 @login_required
 def rack_detalhe(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
-    return render(request, 'rack_detalhe.html', {'rack': rack})
+    # Buscando os dispositivos vinculados ao rack
+    devices = rack.devices.all() 
+    
+    return render(request, 'rack_detalhe.html', {
+        'rack': rack,
+        'devices': devices
+    })
 
 
 @login_required
