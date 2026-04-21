@@ -1,0 +1,44 @@
+/* RACK+ Estilos Globais e Layout */
+body {
+    background: url("../img/teladefundo.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.barra-lateral-desktop {
+    width: 90px;
+    background-color: #d6d8e5;
+    z-index: 1050;
+}
+
+
+@media (min-width: 768px) {
+    .conteudo-principal {
+        margin-left: 90px; 
+    }
+}
+
+/* Menu Mobile*/
+.offcanvas {
+    width: 90px !important;
+    background-color: #d6d8e5 !important;
+    border: none;
+}
+
+.offcanvas-header .btn-close {
+    margin: 0 auto; 
+}
+
+
+.icone-nav {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+/* Bolinha de Status das Salas */
+.indicador-status {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
