@@ -54,6 +54,16 @@
                     </div>
                 </a>
             </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="p-5 border rounded-4 bg-light shadow-sm" style="border-style: dashed !important;">
+                    <img src="{% static 'img/logo.png' %}" alt="Sem Racks" style="width: 80px; opacity: 0.5;">
+                    <p class="mt-3 text-muted mb-0 fw-medium">
+                        Ainda não há racks cadastrados nesta sala.
+                    </p>
+                    <small class="text-muted">Os novos racks aparecerão aqui assim que forem adicionados.</small>
+                </div>
+            </div>
         {% endfor %}
     </div>
 </div>
