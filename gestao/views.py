@@ -14,7 +14,13 @@ def home(request):
 @login_required
 def sala_detalhe(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
-    return render(request, 'sala_detalhe.html', {'sala': sala})
+    # Busca todos os racks que pertencem a essa sala específica
+    racks = sala.racks.all() 
+    
+    return render(request, 'sala_detalhe.html', {
+        'sala': sala,
+        'racks': racks
+    })
 
 
 @login_required

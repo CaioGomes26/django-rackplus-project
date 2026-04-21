@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Racks | {{ sala.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'gestao:home' %}" class="btn btn-light rounded-circle shadow-sm me-3 border-0">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <h1 class="fw-bold h4 mb-0 text-dark">{{ sala.nome }}</h1>
+            <p class="text-muted mb-0 small">
+                <i class="bi bi-geo-alt"></i> {{ sala.localizacao }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="input-group bg-white rounded-pill shadow-sm overflow-hidden p-1 border">
+                <span class="input-group-text bg-transparent border-0 ps-3">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-0 shadow-none" placeholder="BUSCAR RACK...">
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 g-lg-4">
+        {% for rack in racks %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <a href="{% url 'gestao:rack_detalhe' rack.pk %}" 
+                   class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover bg-white">
+                    
+                    <div class="position-relative d-flex justify-content-center align-items-center p-3" 
+                         style="height: 140px; background: linear-gradient(180deg, #0046CB 0%, #75C6F0 100%);">
+                        
+                        <img src="{% static 'img/icon-rackpreto.png' %}" 
+                             alt="Rack" 
+                             style="max-width: 90%; max-height: 90%; object-fit: contain; z-index: 2;">
+
+                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 3;">
+                            <span class="indicador-status bg-secondary opacity-75 shadow-sm"></span>
+                        </div>
+                    </div>
+
+                    <div class="card-body py-2 px-1 text-center bg-white border-top">
+                        <h6 class="fw-bold text-dark mb-0 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                            {{ rack.nome }}
+                        </h6>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .indicador-status {
+        display: block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .transition-hover {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .transition-hover:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
