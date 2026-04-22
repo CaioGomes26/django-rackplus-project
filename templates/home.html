@@ -20,31 +20,41 @@
             </div>
         </div>
     <div class="d-flex gap-3">
-        <a href="{% url 'gestao:sala_criar' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold border-2 transition-hover">
+        <a href="{% url 'gestao:sala_criar' %}" class="btn btn-outline-primary mt-3 rounded-pill px-4 py-2 fw-bold border-2 transition-hover">
             <i class="bi bi-plus-circle-fill me-2"></i>Adicionar Sala
         </a>
     </div>
 </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 px-3">
         {% for sala in salas %}
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{% url 'gestao:sala_detalhe' sala.pk %}" class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover">
-                    
-                    <div class="position-relative">
-                        <img src="{% static 'img/icon-sala.png' %}" class="w-100" style="height: 160px; object-fit: cover;">
-                        
-                        <div class="position-absolute bottom-0 start-0 end-0 p-2 d-flex justify-content-between align-items-end text-white" 
-                             style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                            <span class="fw-bold small">{{ sala.nome }}</span>
-                            
-                            <span class="indicador-status bg-secondary opacity-75 shadow-sm"></span>
-                        </div>
-                    </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="position-relative h-100">
+            
+            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1" style="z-index: 20;">
+                <a href="{% url 'gestao:sala_editar' sala.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: white; border: 1px solid #eee;">
+                    <i class="bi bi-pencil-fill text-primary"></i>
+                </a>
+                <a href="{% url 'gestao:sala_deletar' sala.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: white; border: 1px solid #eee;">
+                    <i class="bi bi-trash-fill text-danger"></i>
                 </a>
             </div>
-        {% empty %}
+
+            <a href="{% url 'gestao:sala_detalhe' sala.pk %}" class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover d-block">
+                <div class="position-relative">
+                    <img src="{% static 'img/icon-sala.png' %}" class="w-100" style="height: 160px; object-fit: cover;">
+                    
+                    <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex justify-content-between align-items-center text-white" 
+                         style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                        <span class="fw-bold text-uppercase italic small" style="letter-spacing: 1px;">{{ sala.nome }}</span>
+                        <span class="indicador-status bg-secondary opacity-75 shadow-sm"></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% empty %}
             <div class="col-12 text-center text-muted py-5">
                 <p>Nenhuma sala cadastrada no sistema.</p>
             </div>

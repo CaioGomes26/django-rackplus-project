@@ -88,3 +88,46 @@ def rack_criar(request):
         form = RackForm()
 
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Rack'})
+
+def sala_editar(request, pk):
+    sala = get_object_or_404(Sala, pk=pk)
+    if request.method == 'POST':
+        form = SalaForm(request.POST, instance=sala)
+        if form.is_valid():
+            form.save()
+            return redirect('gestao:home')
+    else:
+        form = SalaForm(instance=sala)
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {sala.nome}'})
+
+def rack_editar(request, pk):
+    rack = get_object_or_404(Rack, pk=pk)
+    # Guardamos o ID da sala para o redirect
+    sala_id = rack.sala.id 
+    
+    if request.method == 'POST':
+        form = RackForm(request.POST, instance=rack)
+        if form.is_valid():
+            form.save()
+            # Volta para os detalhes da sala específica
+            return redirect('gestao:sala_detalhe', pk=sala_id)
+    else:
+        form = RackForm(instance=rack)
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {rack.nome}'})
+
+def sala_deletar(request, pk):
+    sala = get_object_or_404(Sala, pk=pk)
+    if request.method == 'POST':
+        sala.delete()
+        return redirect('gestao:home')
+    return render(request, 'form/confirmar_exclusao.html', {'objeto': sala, 'tipo': 'Sala', 'titulo': f'Excluir {sala.nome}'})
+
+
+def rack_deletar(request, pk):
+    rack = get_object_or_404(Rack, pk=pk)
+    sala_id = rack.sala.id
+    
+    if request.method == 'POST':
+        rack.delete()
+        return redirect('gestao:sala_detalhe', pk=sala_id)
+    return render(request, 'form/confirmar_exclusao.html', {'objeto': rack, 'tipo': 'Rack', 'titulo': f'Excluir {rack.nome}'})

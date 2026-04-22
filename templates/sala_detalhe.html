@@ -28,38 +28,49 @@
             </div>
         </div>
         <div class="d-flex gap-3">
-            <a href="{% url 'gestao:rack_criar' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold border-2 transition-hover">
+            <a href="{% url 'gestao:rack_criar' %}" class="btn btn-outline-primary mt-3 px-4 py-2 fw-bold border-2 transition-hover">
                 <i class="bi bi-plus-circle-fill me-2"></i>Adicionar Rack
             </a>
         </div>
     </div>
 
-    <div class="row g-3 g-lg-4">
-        {% for rack in racks %}
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="{% url 'gestao:rack_detalhe' rack.pk %}" 
-                   class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover bg-white">
-                    
+    <div class="row g-3 g-lg-4 px-2">
+    {% for rack in racks %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="position-relative h-100">
+                
+                <div class="position-absolute top-0 end-0 p-1 d-flex flex-column gap-1" style="z-index: 10;">
+                    <a href="{% url 'gestao:rack_editar' rack.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 30px; height: 30px; background: white;">
+                        <i class="bi bi-pencil-fill text-primary" style="font-size: 0.75rem;"></i>
+                    </a>
+                    <a href="{% url 'gestao:rack_deletar' rack.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 30px; height: 30px; background: white;">
+                        <i class="bi bi-trash-fill text-danger" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover bg-white">
                     <div class="position-relative d-flex justify-content-center align-items-center p-3" 
                          style="height: 140px; background: linear-gradient(180deg, #0046CB 0%, #75C6F0 100%);">
                         
-                        <img src="{% static 'img/icon-rackpreto.png' %}" 
-                             alt="Rack" 
-                             style="max-width: 90%; max-height: 90%; object-fit: contain; z-index: 2;">
+                        <img src="{% static 'img/icon-rackpreto.png' %}" alt="Rack" 
+                             style="max-width: 80%; max-height: 80%; object-fit: contain;">
 
-                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 3;">
+                        <div class="position-absolute top-0 start-0 m-2">
                             <span class="indicador-status bg-secondary opacity-75 shadow-sm"></span>
                         </div>
                     </div>
 
                     <div class="card-body py-2 px-1 text-center bg-white border-top">
-                        <h6 class="fw-bold text-dark mb-0 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                            {{ rack.nome }}
-                        </h6>
+                        <a href="{% url 'gestao:rack_detalhe' rack.pk %}" class="stretched-link text-decoration-none">
+                            <h6 class="fw-bold text-dark mb-0 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                {{ rack.nome }}
+                            </h6>
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
-            {% empty %}
+        </div>
+    {% empty %}
             <div class="col-12 text-center py-5">
                 <div class="p-5 border rounded-4 bg-light shadow-sm" style="border-style: dashed !important;">
                     <img src="{% static 'img/logo.png' %}" alt="Sem Racks" style="width: 80px; opacity: 0.5;">

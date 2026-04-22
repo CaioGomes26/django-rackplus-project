@@ -18,4 +18,8 @@ urlpatterns = [
     path('devices/<int:pk>/excluir/', views.device_excluir, name='device_excluir'),
     path('sala/nova/', views.sala_criar, name='sala_criar'),
     path('rack/novo/', views.rack_criar, name='rack_criar'),
+    path('sala/<int:pk>/editar/', views.sala_editar, name='sala_editar'),
+    path('sala/<int:pk>/deletar/', views.sala_deletar, name='sala_deletar'),
+    path('rack/<int:pk>/editar/', views.rack_editar, name='rack_editar'),
+    path('rack/<int:pk>/deletar/', views.rack_deletar, name='rack_deletar'),
 ]

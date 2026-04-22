@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} | RACK+{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-danger py-4 text-center">
+                    <h3 class="text-white fw-bold text-uppercase mb-0">Atenção!</h3>
+                </div>
+                <div class="card-body p-5 text-center">
+                    <i class="bi bi-exclamation-triangle text-danger mb-4" style="font-size: 4rem;"></i>
+                    <p class="fs-5">Você tem certeza que deseja excluir {{ tipo|lower }}: <br> 
+                       <strong class="text-danger">{{ objeto.nome }}</strong>?
+                    </p>
+                    <p class="text-muted small">Esta ação não pode ser desfeita e pode afetar itens vinculados.</p>
+                    
+                    <form method="post" class="mt-5">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger rounded-pill fw-bold py-2">Sim, Excluir Registro</button>
+                            <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-outline-secondary border-0 rounded-pill fw-bold">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
