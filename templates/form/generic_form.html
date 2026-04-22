@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} | RACK+{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header border-0 py-4 text-center" style="background: linear-gradient(135deg, #2D58CC 0%, #1a3a8f 100%);">
+                    <h3 class="text-white fw-bold italic text-uppercase mb-0" style="letter-spacing: 2px;">
+                        {{ titulo }}
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark small mb-2 text-uppercase" style="letter-spacing: 1px;">
+                                {{ field.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-pill px-3">
+                                    {% if 'Sala' in field.label %}<i class="bi bi-door-open text-primary"></i>
+                                    {% elif 'Local' in field.label %}<i class="bi bi-geo-alt text-primary"></i>
+                                    {% else %}<i class="bi bi-hash text-primary"></i>{% endif %}
+                                </span>
+                                {{ field }}
+                            </div>
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1 ps-3">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow transition-hover py-3" style="background-color: #2D58CC;">
+                                Confirmar Cadastro
+                            </button>
+                            <a href="{% url 'gestao:home' %}" class="btn btn-link text-muted text-decoration-none fw-bold small">
+                                <i class="bi bi-x-circle me-1"></i>Descartar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-left: none !important;
+        border-radius: 0 50px 50px 0 !important;
+        background-color: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        padding: 0.75rem 1.25rem !important;
+    }
+    .form-control:focus, .form-select:focus {
+        box-shadow: none !important;
+        border-color: #2D58CC !important;
+        background-color: #fff !important;
+    }
+    .input-group-text { border: 1px solid #dee2e6 !important; }
+</style>
+{% endblock %}

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Device, Rack, Sala
-
+from .forms import SalaForm, RackForm
 
 @login_required
 def home(request):
@@ -66,3 +66,25 @@ def device_excluir(request, pk):
         messages.success(request, 'Device excluído com sucesso.')
         return redirect('gestao:device_gerenciar')
     return redirect('gestao:device_gerenciar')
+
+def sala_criar(request):
+    if request.method == 'POST':
+        form = SalaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('gestao:home')
+    else:
+        form = SalaForm()
+
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Sala'})
+
+def rack_criar(request):
+    if request.method == 'POST':
+        form = RackForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('gestao:home')
+    else:
+        form = RackForm()
+
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Rack'})

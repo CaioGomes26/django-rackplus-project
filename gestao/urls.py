@@ -16,4 +16,6 @@ urlpatterns = [
     path('devices/novo/', views.device_novo, name='device_novo'),
     path('devices/<int:pk>/editar/', views.device_editar, name='device_editar'),
     path('devices/<int:pk>/excluir/', views.device_excluir, name='device_excluir'),
+    path('sala/nova/', views.sala_criar, name='sala_criar'),
+    path('rack/novo/', views.rack_criar, name='rack_criar'),
 ]
