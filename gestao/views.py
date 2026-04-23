@@ -125,7 +125,7 @@ def device_excluir(request, pk):
         'titulo': f'Excluir {device.serial_id}',
     })
 
-
+@login_required
 def sala_criar(request):
     if request.method == 'POST':
         form = SalaForm(request.POST)
@@ -137,7 +137,7 @@ def sala_criar(request):
 
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Sala'})
 
-
+@login_required
 def rack_criar(request):
     if request.method == 'POST':
         form = RackForm(request.POST)
@@ -149,7 +149,7 @@ def rack_criar(request):
 
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Rack'})
 
-
+@login_required
 def sala_editar(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
     if request.method == 'POST':
@@ -161,7 +161,7 @@ def sala_editar(request, pk):
         form = SalaForm(instance=sala)
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {sala.nome}'})
 
-
+@login_required
 def rack_editar(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
     sala_id = rack.sala.id
@@ -175,7 +175,7 @@ def rack_editar(request, pk):
         form = RackForm(instance=rack)
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {rack.nome}'})
 
-
+@login_required
 def sala_deletar(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
     if request.method == 'POST':
@@ -183,7 +183,7 @@ def sala_deletar(request, pk):
         return redirect('gestao:home')
     return render(request, 'form/confirmar_exclusao.html', {'objeto': sala, 'tipo': 'Sala', 'titulo': f'Excluir {sala.nome}'})
 
-
+@login_required
 def rack_deletar(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
     sala_id = rack.sala.id
