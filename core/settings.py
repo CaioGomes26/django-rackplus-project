@@ -98,11 +98,15 @@ LOGIN_URL = '/login/'
 
 # Configurações padrão da API REST
 REST_FRAMEWORK = {
+    # 1. QUEM PODE ACESSAR A API (Permissões)
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # apenas usuários autenticados acessam a API
+        'rest_framework.permissions.IsAuthenticated', # Exige autenticação para acessar qualquer endpoint da API
     ],
+    
+    # 2. COMO AUTENTICAR (Mecanismos)
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',  # usa o mesmo sistema de sessão do Django
+        'rest_framework.authentication.BasicAuthentication',   # Permite autenticação via API (ex: Postman)
+        'rest_framework.authentication.SessionAuthentication', # Permite autenticação via sessão (navegador)
     ],
 }
 
