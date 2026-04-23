@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Device, Rack, Sala, TelemetryLog
+from .models import Device, DeviceTelemetry, Rack, Sala, TelemetryLog
 
 
 @admin.register(Sala)
@@ -13,14 +13,22 @@ class SalaAdmin(admin.ModelAdmin):
 class RackAdmin(admin.ModelAdmin):
     list_display = ['nome', 'sala', 'criado_em']
     search_fields = ['nome']
-    list_filter = ['sala']  # filtro lateral por sala
+    list_filter = ['sala']
 
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ['serial_id', 'rack', 'status_conexao', 'bateria_pct', 'ultimo_log']
-    search_fields = ['serial_id']
-    list_filter = ['status_conexao', 'rack__sala']  # filtra por status e por sala do rack
+    list_display = ['serial_id', 'rack', 'processador', 'ram', 'armazenamento_total_gb', 'criado_em']
+    search_fields = ['serial_id', 'processador']
+    list_filter = ['rack__sala', 'rack']
+
+
+@admin.register(DeviceTelemetry)
+class DeviceTelemetryAdmin(admin.ModelAdmin):
+    list_display = ['device', 'status_conexao', 'bateria_pct', 'armazenamento_usado_gb', 'ultimo_log']
+    search_fields = ['device__serial_id']
+    list_filter = ['status_conexao', 'device__rack__sala']
+    readonly_fields = ['device', 'bateria_pct', 'status_conexao', 'armazenamento_usado_gb', 'ultimo_log', 'atualizado_em']
 
 
 @admin.register(TelemetryLog)
@@ -28,4 +36,4 @@ class TelemetryLogAdmin(admin.ModelAdmin):
     list_display = ['device', 'status_conexao', 'bateria_pct', 'armazenamento_usado_gb', 'registrado_em']
     search_fields = ['device__serial_id']
     list_filter = ['status_conexao']
-    readonly_fields = ['device', 'bateria_pct', 'status_conexao', 'armazenamento_usado_gb', 'registrado_em']  # log nunca deve ser editado manualmente
+    readonly_fields = ['device', 'bateria_pct', 'status_conexao', 'armazenamento_usado_gb', 'registrado_em']

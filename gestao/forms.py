@@ -1,5 +1,5 @@
 from django import forms
-from .models import Sala, Rack
+from .models import Device, Rack, Sala
 
 class BaseStyledForm(forms.ModelForm):
     base_class = 'form-control rounded-pill px-4'
@@ -28,3 +28,34 @@ class RackForm(BaseStyledForm):
         widgets = {
             'nome': forms.TextInput(attrs={'placeholder': 'Ex: Rack-01'}),
         }
+
+class DeviceForm(BaseStyledForm):
+    class Meta:
+        model = Device
+        fields = [
+            'serial_id',
+            'rack',
+            'processador',
+            'ram',
+            'armazenamento_total_gb',
+        ]
+        labels = {
+            'serial_id': 'ID Serial',
+            'rack': 'Rack de Destino',
+            'processador': 'Processador',
+            'ram': 'Memória RAM',
+            'armazenamento_total_gb': 'Armazenamento Total (GB)',
+        }
+        widgets = {
+            'serial_id': forms.TextInput(attrs={'placeholder': 'Ex: DEV-001'}),
+            'processador': forms.TextInput(attrs={'placeholder': 'Ex: Intel Core i5'}),
+            'ram': forms.TextInput(attrs={'placeholder': 'Ex: 16 GB DDR4'}),
+            'armazenamento_total_gb': forms.NumberInput(attrs={'min': 0, 'placeholder': 'Ex: 512'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        rack_inicial = kwargs.pop('rack_inicial', None)
+        super().__init__(*args, **kwargs)
+
+        if rack_inicial and not self.instance.pk:
+            self.fields['rack'].initial = rack_inicial

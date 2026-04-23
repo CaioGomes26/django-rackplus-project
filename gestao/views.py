@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import Q
 
-from .models import Device, Rack, Sala
-from .forms import SalaForm, RackForm
+from .forms import DeviceForm, RackForm, SalaForm
+from .models import Device, Rack, Sala, TelemetryLog
+
 
 @login_required
 def home(request):
@@ -23,58 +24,107 @@ def home(request):
 def sala_detalhe(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
     query = request.GET.get('search')
-    racks = Rack.objects.filter(sala=sala) # Puxa os racks que pertencem a esta sala
-    
+    racks = Rack.objects.filter(sala=sala)
+
     if query:
         racks = racks.filter(Q(nome__icontains=query)).distinct()
-        
+
     return render(request, 'sala_detalhe.html', {'sala': sala, 'racks': racks})
+
 
 @login_required
 def rack_detalhe(request, pk):
-    rack = get_object_or_404(Rack, pk=pk)
+    rack = get_object_or_404(Rack.objects.select_related('sala'), pk=pk)
     query = request.GET.get('search')
-    devices = Device.objects.filter(rack=rack)
-    
+    devices = Device.objects.filter(rack=rack).select_related('telemetria_atual')
+
     if query:
         devices = devices.filter(
             Q(serial_id__icontains=query) | Q(processador__icontains=query)
         ).distinct()
-        
+
     return render(request, 'rack_detalhe.html', {'rack': rack, 'devices': devices})
 
 
 @login_required
 def device_detalhe(request, pk):
-    device = get_object_or_404(Device, pk=pk)
-    return render(request, 'device_detalhe.html', {'device': device})
+    device = get_object_or_404(
+        Device.objects.select_related('rack__sala', 'telemetria_atual').prefetch_related(
+            Prefetch('logs', queryset=TelemetryLog.objects.order_by('-registrado_em'))
+        ),
+        pk=pk,
+    )
+    telemetria = getattr(device, 'telemetria_atual', None)
+    logs = list(device.logs.all()[:10])
+    uso_pct = None
+
+    if telemetria and device.armazenamento_total_gb:
+        uso_pct = min(
+            100,
+            round((telemetria.armazenamento_usado_gb / device.armazenamento_total_gb) * 100),
+        )
+
+    context = {
+        'device': device,
+        'telemetria': telemetria,
+        'logs': logs,
+        'uso_pct': uso_pct,
+    }
+    return render(request, 'device_detalhe.html', context)
 
 
 @login_required
 def device_gerenciar(request):
-    devices = Device.objects.select_related('rack__sala').all()
-    return render(request, 'device_gerenciar.html', {'devices': devices})
+    return redirect('gestao:home')
 
 
 @login_required
 def device_novo(request):
-    return render(request, 'device_form.html')
+    rack_id = request.GET.get('rack')
+    rack = get_object_or_404(Rack, pk=rack_id) if rack_id else None
+
+    if request.method == 'POST':
+        form = DeviceForm(request.POST, rack_inicial=rack)
+        if form.is_valid():
+            device = form.save()
+            return redirect('gestao:rack_detalhe', pk=device.rack.pk)
+    else:
+        form = DeviceForm(rack_inicial=rack)
+
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Device'})
 
 
 @login_required
 def device_editar(request, pk):
     device = get_object_or_404(Device, pk=pk)
-    return render(request, 'device_form.html', {'device': device})
+
+    if request.method == 'POST':
+        form = DeviceForm(request.POST, instance=device)
+        if form.is_valid():
+            device = form.save()
+            return redirect('gestao:rack_detalhe', pk=device.rack.pk)
+    else:
+        form = DeviceForm(instance=device)
+
+    return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {device.serial_id}'})
 
 
 @login_required
 def device_excluir(request, pk):
     device = get_object_or_404(Device, pk=pk)
+    rack_id = device.rack.id
+
     if request.method == 'POST':
         device.delete()
         messages.success(request, 'Device excluído com sucesso.')
-        return redirect('gestao:device_gerenciar')
-    return redirect('gestao:device_gerenciar')
+        return redirect('gestao:rack_detalhe', pk=rack_id)
+
+    return render(request, 'form/confirmar_exclusao.html', {
+        'objeto': device,
+        'tipo': 'Device',
+        'titulo': f'Excluir {device.serial_id}',
+    })
+
 
 def sala_criar(request):
     if request.method == 'POST':
@@ -87,6 +137,7 @@ def sala_criar(request):
 
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Sala'})
 
+
 def rack_criar(request):
     if request.method == 'POST':
         form = RackForm(request.POST)
@@ -97,6 +148,7 @@ def rack_criar(request):
         form = RackForm()
 
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': 'Adicionar Rack'})
+
 
 def sala_editar(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
@@ -109,20 +161,20 @@ def sala_editar(request, pk):
         form = SalaForm(instance=sala)
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {sala.nome}'})
 
+
 def rack_editar(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
-    # Guardamos o ID da sala para o redirect
-    sala_id = rack.sala.id 
-    
+    sala_id = rack.sala.id
+
     if request.method == 'POST':
         form = RackForm(request.POST, instance=rack)
         if form.is_valid():
             form.save()
-            # Volta para os detalhes da sala específica
             return redirect('gestao:sala_detalhe', pk=sala_id)
     else:
         form = RackForm(instance=rack)
     return render(request, 'form/generic_form.html', {'form': form, 'titulo': f'Editar {rack.nome}'})
+
 
 def sala_deletar(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
@@ -135,7 +187,7 @@ def sala_deletar(request, pk):
 def rack_deletar(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
     sala_id = rack.sala.id
-    
+
     if request.method == 'POST':
         rack.delete()
         return redirect('gestao:sala_detalhe', pk=sala_id)

@@ -1,7 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+
 from . import views
-from .api_views import SalaViewSet, RackViewSet, DeviceViewSet, TelemetryLogViewSet
+from .api_views import DeviceViewSet, RackViewSet, SalaViewSet, TelemetryLogViewSet
 
 app_name = 'gestao' # namespace para referenciar rotas como 'gestao:home'
 
@@ -29,13 +30,12 @@ urlpatterns = [
     path('rack/<int:pk>/editar/', views.rack_editar, name='rack_editar'),
     path('rack/<int:pk>/deletar/', views.rack_deletar, name='rack_deletar'),
 
-    # CRUD de devices - desenvolver depois
+    # CRUD de devices
     path('devices/gerenciar/', views.device_gerenciar, name='device_gerenciar'),
     path('devices/novo/', views.device_novo, name='device_novo'),
     path('devices/<int:pk>/editar/', views.device_editar, name='device_editar'),
     path('devices/<int:pk>/excluir/', views.device_excluir, name='device_excluir'), 
 
     # API ENDPOINTS
-    # As rotas serão: /gestao/api/salas/, /gestao/api/racks/, etc.
     path('api/', include(router.urls)),
 ]

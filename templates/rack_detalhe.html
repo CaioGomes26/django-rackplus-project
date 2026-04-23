@@ -28,30 +28,60 @@
                     class="form-control border-0 shadow-none" placeholder="BUSCAR DEVICE...">
             </div>
         </form>
+        <div class="d-flex gap-3">
+            <a href="{% url 'gestao:device_novo' %}?rack={{ rack.pk }}" class="btn btn-outline-primary mt-3 px-4 py-2 fw-bold border-2 transition-hover">
+                <i class="bi bi-plus-circle-fill me-2"></i>Adicionar Device
+            </a>
+        </div>
     </div>
 
     <div class="row g-3 g-lg-4">
         {% for device in devices %}
+            {% with telemetria=device.telemetria_atual|default:None %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="{% url 'gestao:device_detalhe' device.pk %}" class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover bg-white">
-                    
-                    <div class="position-relative d-flex justify-content-center align-items-center p-3" 
-                         style="height: 130px; background: linear-gradient(180deg, #0046CB 0%, #75C6F0 100%);">
-                        
-                        <i class="bi bi-pc-display text-black opacity-75" style="font-size: 3.5rem; z-index: 2;"></i>
+                <div class="position-relative h-100">
+                    <div class="position-absolute top-0 end-0 p-1 d-flex flex-column gap-1" style="z-index: 10;">
+                        <a href="{% url 'gestao:device_editar' device.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 30px; height: 30px; background: white;">
+                            <i class="bi bi-pencil-fill text-primary" style="font-size: 0.75rem;"></i>
+                        </a>
+                        <a href="{% url 'gestao:device_excluir' device.pk %}" class="btn btn-sm btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center border" style="width: 30px; height: 30px; background: white;">
+                            <i class="bi bi-trash-fill text-danger" style="font-size: 0.75rem;"></i>
+                        </a>
+                    </div>
 
-                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 3;">
-                            <span class="indicador-status bg-secondary opacity-50 shadow-sm"></span>
+                    <a href="{% url 'gestao:device_detalhe' device.pk %}" class="card text-decoration-none shadow-sm border-0 rounded-4 overflow-hidden h-100 transition-hover bg-white d-block">
+                        <div class="position-relative d-flex justify-content-center align-items-center p-3"
+                             style="height: 140px; background: linear-gradient(180deg, #0046CB 0%, #75C6F0 100%);">
+
+                            <i class="bi bi-pc-display text-black opacity-75" style="font-size: 3.5rem; z-index: 2;"></i>
+
+                            <div class="position-absolute top-0 end-0 m-2" style="z-index: 3;">
+                                <span class="indicador-status {% if telemetria %}{% if telemetria.status_conexao == 'conectado' or telemetria.status_conexao == 'conectado_carregando' %}bg-success{% elif telemetria.status_conexao == 'problema' %}bg-danger{% else %}bg-secondary{% endif %}{% else %}bg-light{% endif %} shadow-sm"></span>
+                            </div>
+
+                            <div class="position-absolute bottom-0 start-0 end-0 px-2 pb-2">
+                                {% if telemetria %}
+                                    <div class="device-chip">
+                                        {{ telemetria.get_status_conexao_display }}
+                                    </div>
+                                {% else %}
+                                    <div class="device-chip device-chip-neutral">
+                                        Aguardando coleta
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="card-body py-2 px-1 text-center bg-white border-top">
-                        <h6 class="fw-bold text-dark mb-0 small" style="font-size: 0.75rem;">
-                            ID: {{ device.serial_id }}
-                        </h6>
-                    </div>
-                </a>
+                        <div class="card-body py-3 px-2 text-center bg-white border-top">
+                            <h6 class="fw-bold text-dark mb-1 small" style="font-size: 0.78rem;">
+                                {{ device.serial_id }}
+                            </h6>
+                            <small class="text-muted d-block">{{ device.processador }}</small>
+                        </div>
+                    </a>
+                </div>
             </div>
+            {% endwith %}
         {% empty %}
         <div class="col-12 text-center py-5">
             <div class="p-5 border rounded-4 bg-light shadow-sm" style="border-style: dashed !important;">
@@ -64,6 +94,7 @@
                     <i class="bi bi-hdd-rack text-muted mb-3 d-block" style="font-size: 3rem; opacity: 0.5;"></i>
                     <h5 class="fw-bold text-dark">RACK VAZIO</h5>
                     <p class="text-muted">Este rack ainda não possui equipamentos instalados.</p>
+                    <a href="{% url 'gestao:device_novo' %}?rack={{ rack.pk }}" class="btn btn-sm btn-outline-primary rounded-pill px-4">Adicionar primeiro device</a>
                 {% endif %}
             </div>
         </div>
@@ -78,6 +109,23 @@
         height: 12px;
         border-radius: 50%;
         border: 2px solid white;
+    }
+
+    .device-chip {
+        display: inline-block;
+        width: 100%;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #163b84;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        padding: 0.28rem 0.5rem;
+        text-align: center;
+    }
+
+    .device-chip-neutral {
+        color: #5f6368;
     }
 
     .transition-hover {
