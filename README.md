@@ -234,31 +234,94 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Crie o banco de dados
+### 4. Prepare o banco de dados (MySQL)
 
-Exemplo de criação no MySQL:
+O RACK+ utiliza MySQL para persistência de dados. Antes de continuar, certifique-se de que o serviço do MySQL está ativo na sua máquina.
+
+**Como verificar se o MySQL está rodando:**
+
+- **Windows:** abra o Gerenciador de Tarefas → aba "Serviços" → procure por `MySQL` e confirme que o status é "Em execução". Alternativamente, abra o **MySQL Notifier** na bandeja do sistema.
+- **Linux:** execute `sudo systemctl status mysql` no terminal.
+
+Acesse seu cliente MySQL (terminal, Workbench ou HeidiSQL) e execute:
 
 ```sql
+-- Cria o banco com suporte a acentos e caracteres especiais
 CREATE DATABASE rackplus CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
+Para confirmar que o banco foi criado:
+
+```sql
+SHOW DATABASES;
+```
+
+O banco `rackplus` deve aparecer na lista.
+
+> **Nota técnica — driver de conexão:** o projeto utiliza a biblioteca `mysqlclient` como ponte entre Django e MySQL. No **Windows**, os binários já estão incluídos no pacote e nenhuma instalação adicional é necessária. No **Linux (Ubuntu/Debian)**, caso ocorra erro de compilação durante o `pip install`, instale as dependências do sistema antes de rodar o pip:
+> ```bash
+> sudo apt install python3-dev default-libmysqlclient-dev build-essential
+> ```
+
+---
+
 ### 5. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+O projeto utiliza um arquivo `.env` para armazenar informações sensíveis como a chave secreta do Django e as credenciais do banco. Esse arquivo **nunca é versionado** — ele já está listado no `.gitignore` por segurança.
+
+**Passo 1 — Gere uma SECRET_KEY segura**
+
+A `SECRET_KEY` é usada pelo Django para assinar cookies, tokens e dados de sessão. Nunca use uma chave fraca ou previsível.
+
+Gere uma chave segura em: **https://djecrety.ir/**
+
+Copie o resultado — você vai usá-lo no próximo passo.
+
+**Passo 2 — Crie o arquivo `.env`**
+
+Crie manualmente um arquivo chamado `.env` na raiz do projeto (mesma pasta do `manage.py`) com o seguinte conteúdo:
 
 ```env
-SECRET_KEY=sua_chave_secreta_aqui
+SECRET_KEY=cole_aqui_a_chave_gerada_no_djecrety
 DEBUG=True
-
 DB_NAME=rackplus
-DB_USER=seu_usuario_mysql
-DB_PASSWORD=sua_senha_mysql
+DB_USER=root
+DB_PASSWORD=sua_senha_do_mysql
 DB_HOST=localhost
 DB_PORT=3306
 ```
 
-> O arquivo `.env` não deve ser versionado. Ele já está ignorado no `.gitignore`.
+> Substitua `sua_senha_do_mysql` pela senha que você usa para acessar o MySQL localmente.
 
+**Alternativa — gerar o arquivo via CMD (Windows)**
+
+Se preferir, execute o comando abaixo diretamente no CMD para criar o `.env` automaticamente com valores padrão:
+
+```bat
+echo SECRET_KEY=django-insecure-rackplus-local-key > .env && echo DEBUG=True >> .env && echo DB_NAME=rackplus >> .env && echo DB_USER=root >> .env && echo DB_PASSWORD= >> .env && echo DB_HOST=localhost >> .env && echo DB_PORT=3306 >> .env
+```
+
+Depois edite o arquivo e substitua `DB_PASSWORD=` pela sua senha e `SECRET_KEY` pela chave gerada no djecrety.
+
+**Passo 3 — Confirme que o arquivo foi criado corretamente**
+
+No CMD:
+```bat
+type .env
+```
+
+No terminal Linux/macOS:
+```bash
+cat .env
+```
+
+O conteúdo deve aparecer com todas as variáveis preenchidas, sem linhas em branco inesperadas.
+
+**Resumo das boas práticas:**
+
+- Nunca commite o `.env` no repositório — as credenciais ficariam públicas no GitHub.
+- Em produção, defina `DEBUG=False` e use uma `SECRET_KEY` diferente da local.
+- Se trocar de máquina, recrie o `.env` manualmente — ele não está no repositório por design.
 ### 6. Aplique as migrações
 
 ```bash
