@@ -19,14 +19,15 @@
     </div>
 
     <div class="row justify-content-center mb-5">
-        <div class="col-12 col-md-8 col-lg-6">
+        <form method="GET" action="." class="col-12 col-md-8 col-lg-6">
             <div class="input-group bg-white rounded-pill shadow-sm overflow-hidden p-1 border">
                 <span class="input-group-text bg-transparent border-0 ps-3">
                     <i class="bi bi-search text-muted"></i>
                 </span>
-                <input type="text" class="form-control border-0 shadow-none" placeholder="BUSCAR RACK...">
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" 
+                    class="form-control border-0 shadow-none" placeholder="BUSCAR RACK NESTA SALA...">
             </div>
-        </div>
+        </form>
         <div class="d-flex gap-3">
             <a href="{% url 'gestao:rack_criar' %}" class="btn btn-outline-primary mt-3 px-4 py-2 fw-bold border-2 transition-hover">
                 <i class="bi bi-plus-circle-fill me-2"></i>Adicionar Rack
@@ -71,16 +72,28 @@
             </div>
         </div>
     {% empty %}
-            <div class="col-12 text-center py-5">
-                <div class="p-5 border rounded-4 bg-light shadow-sm" style="border-style: dashed !important;">
+        <div class="col-12 text-center py-5">
+            <div class="p-5 border rounded-4 bg-light shadow-sm" style="border-style: dashed !important;">
+                
+                {% if request.GET.search %}
+                    <i class="bi bi-search text-muted mb-3 d-block" style="font-size: 3rem; opacity: 0.5;"></i>
+                    <h5 class="fw-bold text-dark">Nenhum rack encontrado</h5>
+                    <p class="text-muted">Não encontramos resultados para "<strong>{{ request.GET.search }}</strong>".</p>
+                    <a href="{% url 'gestao:sala_detalhe' sala.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                        Limpar busca
+                    </a>
+                {% else %}
                     <img src="{% static 'img/logo.png' %}" alt="Sem Racks" style="width: 80px; opacity: 0.5;">
-                    <p class="mt-3 text-muted mb-0 fw-medium">
+                    <h5 class="fw-bold text-dark mt-3">SALA VAZIA</h5>
+                    <p class="text-muted mb-0 fw-medium">
                         Ainda não há racks cadastrados nesta sala.
                     </p>
                     <small class="text-muted">Os novos racks aparecerão aqui assim que forem adicionados.</small>
-                </div>
+                {% endif %}
+
             </div>
-        {% endfor %}
+        </div>
+    {% endfor %}
     </div>
 </div>
 

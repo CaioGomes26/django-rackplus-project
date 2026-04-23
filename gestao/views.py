@@ -1,38 +1,47 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Q
 
 from .models import Device, Rack, Sala
 from .forms import SalaForm, RackForm
 
 @login_required
 def home(request):
-    salas = Sala.objects.all()
+    query = request.GET.get('search')
+    if query:
+        # Busca no nome ou na localização
+        salas = Sala.objects.filter(
+            Q(nome__icontains=query) | Q(localizacao__icontains=query)
+        ).distinct()
+    else:
+        salas = Sala.objects.all()
     return render(request, 'home.html', {'salas': salas})
 
 
 @login_required
 def sala_detalhe(request, pk):
     sala = get_object_or_404(Sala, pk=pk)
-    # Busca todos os racks que pertencem a essa sala específica
-    racks = sala.racks.all() 
+    query = request.GET.get('search')
+    racks = Rack.objects.filter(sala=sala) # Puxa os racks que pertencem a esta sala
     
-    return render(request, 'sala_detalhe.html', {
-        'sala': sala,
-        'racks': racks
-    })
-
+    if query:
+        racks = racks.filter(Q(nome__icontains=query)).distinct()
+        
+    return render(request, 'sala_detalhe.html', {'sala': sala, 'racks': racks})
 
 @login_required
 def rack_detalhe(request, pk):
     rack = get_object_or_404(Rack, pk=pk)
-    # Buscando os dispositivos vinculados ao rack
-    devices = rack.devices.all() 
+    query = request.GET.get('search')
+    devices = Device.objects.filter(rack=rack)
     
-    return render(request, 'rack_detalhe.html', {
-        'rack': rack,
-        'devices': devices
-    })
+    if query:
+        devices = devices.filter(
+            Q(serial_id__icontains=query) | Q(processador__icontains=query)
+        ).distinct()
+        
+    return render(request, 'rack_detalhe.html', {'rack': rack, 'devices': devices})
 
 
 @login_required
