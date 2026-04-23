@@ -36,8 +36,8 @@
 
         <nav class="d-none d-md-flex flex-column align-items-center vh-100 position-fixed top-0 start-0 barra-lateral-desktop py-3 shadow">
             <a href="{% url 'gestao:home' %}"><img src="{% static 'img/logo.png' %}" class="icone-nav mb-5"></a>
-            <a href="#"><img src="{% static 'img/icon-dashboard.png' %}" class="icone-nav my-2"></a>
-            <a href="{% url 'gestao:device_gerenciar' %}"><img src="{% static 'img/icon-logs.png' %}" class="icone-nav my-2"></a>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#devModal"><img src="{% static 'img/icon-dashboard.png' %}" class="icone-nav my-2"></a>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#devModal"><img src="{% static 'img/icon-logs.png' %}" class="icone-nav my-2"></a>
         </nav>
 
         <nav class="d-md-none d-flex justify-content-between align-items-center bg-white shadow-sm p-3 sticky-top">
@@ -66,10 +66,29 @@
             <div class="offcanvas-header"><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
             <div class="offcanvas-body d-flex flex-column align-items-center">
                 <a href="{% url 'gestao:home' %}" class="mb-4"><img src="{% static 'img/icon-home.png' %}" class="icone-nav"></a>
-                <a href="#" class="mb-4"><img src="{% static 'img/icon-dashboard.png' %}" class="icone-nav"></a>
-                <a href="{% url 'gestao:device_gerenciar' %}" class="mb-4"><img src="{% static 'img/icon-logs.png' %}" class="icone-nav"></a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#devModal" class="mb-4"><img src="{% static 'img/icon-dashboard.png' %}" class="icone-nav"></a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#devModal" class="mb-4"><img src="{% static 'img/icon-logs.png' %}" class="icone-nav"></a>
             </div>
         </div>
+    <div class="modal fade" id="devModal" tabindex="-1" aria-labelledby="devModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="devModalLabel">
+                        <i class="bi bi-cone-striped me-2"></i>Funcionalidade em Desenvolvimento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Esta funcionalidade está em fase de implementação e estará disponível em versões futuras do <strong>RACK+</strong>.</p>
+                <img src="{% static 'img/logo.png' %}" alt="Em construção" style="width: 100px;" class="mb-3 opacity-75">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendi</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
     <main class="{% if user.is_authenticated %}conteudo-principal{% endif %} p-3 p-md-4">
