@@ -86,6 +86,11 @@ body {
 
   </div>
 </main>
+<style>
+    input::-ms-reveal, input::-ms-clear { /* Esconde o olho padrão do Edge/IE */
+    display: none;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
