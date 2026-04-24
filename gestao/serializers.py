@@ -1,7 +1,20 @@
 from rest_framework import serializers
-
 from .models import Device, DeviceTelemetry, Rack, Sala, TelemetryLog
 
+class DeviceSimplificadoSerializer(serializers.ModelSerializer):
+    """Exibição resumida de Devices dentro do Rack."""
+    class Meta:
+        model = Device
+        fields = ['id', 'serial_id']
+
+class RackSimplificadoSerializer(serializers.ModelSerializer):
+    """Exibição resumida de Racks dentro da Sala."""
+    class Meta:
+        model = Rack
+        fields = ['id', 'nome']
+
+
+# --- SERIALIZERS PRINCIPAIS ---
 
 class DeviceTelemetrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,18 +56,29 @@ class TelemetryLogSerializer(serializers.ModelSerializer):
 
 
 class DeviceSerializer(serializers.ModelSerializer):
+    # Inclui a telemetria atual se existir (OneToOneField)
+    telemetria_atual = DeviceTelemetrySerializer(read_only=True)
+
     class Meta:
         model = Device
-        fields = '__all__'
+        fields = [
+            'id', 'serial_id', 'rack', 'processador', 
+            'ram', 'armazenamento_total_gb', 'criado_em', 
+            'tem_telemetria', 'telemetria_atual'
+        ]
 
 
 class RackSerializer(serializers.ModelSerializer):
+    devices = DeviceSimplificadoSerializer(many=True, read_only=True)
+
     class Meta:
         model = Rack
-        fields = '__all__'
+        fields = ['id', 'nome', 'sala', 'devices', 'criado_em']
 
 
 class SalaSerializer(serializers.ModelSerializer):
+    racks = RackSimplificadoSerializer(many=True, read_only=True)
+
     class Meta:
         model = Sala
-        fields = '__all__'
+        fields = ['id', 'nome', 'localizacao', 'racks', 'criado_em']
